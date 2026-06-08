@@ -106,6 +106,8 @@ export function useUpdateInvestigation() {
         draft_email: string
         summary: string
         assigned_analyst: string
+        waiting_on: string | null
+        sla_due_at: string | null
       }>
     }) => {
       const { data, error } = await supabase
@@ -154,6 +156,44 @@ export function useDeleteInvestigation() {
         .delete()
         .eq('id', id)
       if (error) throw error
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['investigations'] })
+    },
+  })
+}
+
+// ─── Clone investigation ──────────────────────────────────────────────────────
+export function useCloneInvestigation() {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: async (source: Investigation) => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Not authenticated')
+
+      // Generate a new case number: same prefix + timestamp suffix
+      const prefix = source.case_number.replace(/-\d+$/, '')
+      const newCaseNum = `${prefix}-${Date.now().toString().slice(-6)}`
+
+      const { data, error } = await supabase
+        .from('investigations')
+        .insert({
+          user_id: user.id,
+          client_id: source.client_id,
+          alert_rule_id: source.alert_rule_id,
+          case_number: newCaseNum,
+          alert_name: source.alert_name,
+          severity: source.severity,
+          triggered_at: new Date().toISOString(),
+          field_data: {},                          // clear specific values
+          observations: [],                        // clear observations
+          assigned_analyst: user.email,
+          status: 'new',
+        })
+        .select()
+        .single()
+      if (error) throw error
+      return data as Investigation
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ['investigations'] })

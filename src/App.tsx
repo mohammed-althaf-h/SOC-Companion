@@ -10,14 +10,32 @@ import InvestigationsPage from '@/pages/InvestigationsPage'
 import InvestigationDetailPage from '@/pages/InvestigationDetailPage'
 import NewInvestigationWizard from '@/components/investigations/NewInvestigationWizard'
 import AlertTemplatesPage from '@/pages/AlertTemplatesPage'
+import TemplateEditorPage from '@/pages/TemplateEditorPage'
 import RulesWikiPage from '@/pages/RulesWikiPage'
 import SettingsPage from '@/pages/SettingsPage'
+import GlobalIOCsPage from '@/pages/GlobalIOCsPage'
+import AnalyticsPage from '@/pages/AnalyticsPage'
+import ShiftReportPage from '@/pages/ShiftReportPage'
+import SetupWizard from '@/components/setup/SetupWizard'
+import { useState } from 'react'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
-  if (loading) return <div className="flex h-screen items-center justify-center bg-background"><div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" /></div>
+  const [setupWizardDismissed, setSetupWizardDismissed] = useState(false)
+
+  if (loading) return (
+    <div className="flex h-screen items-center justify-center bg-background">
+      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+    </div>
+  )
   if (!user) return <Navigate to="/login" replace />
-  return <>{children}</>
+
+  return (
+    <>
+      {!setupWizardDismissed && <SetupWizard onComplete={() => setSetupWizardDismissed(true)} />}
+      {children}
+    </>
+  )
 }
 
 export default function App() {
@@ -41,8 +59,14 @@ export default function App() {
           <Route path="investigations/new" element={<NewInvestigationWizard />} />
           <Route path="investigations/:id" element={<InvestigationDetailPage />} />
           <Route path="templates" element={<AlertTemplatesPage />} />
+          <Route path="templates/new" element={<TemplateEditorPage />} />
+          <Route path="templates/:id/edit" element={<TemplateEditorPage />} />
           <Route path="rules-wiki" element={<RulesWikiPage />} />
           <Route path="settings" element={<SettingsPage />} />
+          {/* P1/P2 pages */}
+          <Route path="iocs" element={<GlobalIOCsPage />} />
+          <Route path="analytics" element={<AnalyticsPage />} />
+          <Route path="shift-report" element={<ShiftReportPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

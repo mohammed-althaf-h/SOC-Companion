@@ -41,6 +41,9 @@ export interface Investigation {
   verdict: Verdict
   draft_email: string | null
   summary: string | null
+  // SLA / pending response fields
+  waiting_on: string | null
+  sla_due_at: string | null
   created_at: string
   updated_at: string
   // joined
@@ -174,4 +177,38 @@ export interface RuleWiki {
   content: string
   created_at: string
   updated_at: string
+}
+
+// ─── User Settings ────────────────────────────────────────────────────────────
+
+export interface UserSettings {
+  id: string
+  user_id: string
+  team_name: string
+  soc_email: string
+  analyst_display_name: string | null
+  sign_off_template: string
+  abuseipdb_api_key: string | null
+  ipinfo_api_key: string | null
+  openai_api_key: string | null
+  anthropic_api_key: string | null
+  gemini_api_key: string | null
+  preferred_llm: string
+  setup_completed: boolean
+  created_at: string
+  updated_at: string
+}
+
+export const DEFAULT_USER_SETTINGS: Partial<UserSettings> = {
+  team_name: 'My SOC Team',
+  soc_email: 'soc@example.com',
+  analyst_display_name: null,
+  sign_off_template: 'Regards,\n{{analyst_name}}\n{{team_name}}',
+  abuseipdb_api_key: null,
+  ipinfo_api_key: null,
+  openai_api_key: null,
+  anthropic_api_key: null,
+  gemini_api_key: null,
+  preferred_llm: 'openai',
+  setup_completed: false,
 }

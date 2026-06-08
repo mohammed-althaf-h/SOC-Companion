@@ -32,6 +32,8 @@ CREATE TABLE IF NOT EXISTS public.investigations (
   verdict text,
   draft_email text,
   summary text,
+  waiting_on text,
+  sla_due_at timestamp with time zone,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -155,6 +157,29 @@ ALTER TABLE public.rules_wiki ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Users can manage their own rules wiki"
 ON public.rules_wiki FOR ALL TO authenticated
+USING (auth.uid() = user_id)
+WITH CHECK (auth.uid() = user_id);
+
+-- Create user_settings table
+CREATE TABLE IF NOT EXISTS public.user_settings (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  team_name text not null default 'My SOC Team',
+  soc_email text not null default 'soc@example.com',
+  analyst_display_name text,
+  sign_off_template text not null default 'Regards,\n{{analyst_name}}\n{{team_name}}',
+  abuseipdb_api_key text,
+  ipinfo_api_key text,
+  setup_completed boolean not null default false,
+  created_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  updated_at timestamp with time zone default timezone('utc'::text, now()) not null,
+  UNIQUE(user_id)
+);
+
+ALTER TABLE public.user_settings ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can manage their own settings"
+ON public.user_settings FOR ALL TO authenticated
 USING (auth.uid() = user_id)
 WITH CHECK (auth.uid() = user_id);
 

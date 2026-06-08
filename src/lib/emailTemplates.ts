@@ -1,5 +1,6 @@
-import type { Investigation, Client, AlertRule } from '@/types'
+import type { Investigation, Client, AlertRule, UserSettings } from '@/types'
 import { defangIP, defangURL, defangEmail } from './defang'
+import { DEFAULT_USER_SETTINGS } from '@/types'
 
 /**
  * Simple Handlebars-style template renderer.
@@ -16,7 +17,8 @@ function renderTemplate(template: string, context: Record<string, string>): stri
 function buildNextSteps(
   fieldData: Record<string, string>,
   client: Client,
-  investigation: Investigation
+  investigation: Investigation,
+  settings: UserSettings
 ): string {
   const verdict = fieldData.verdict_type || fieldData.next_step_type || ''
   const user = fieldData.affected_user || fieldData.username || '[User]'
@@ -30,7 +32,8 @@ function buildNextSteps(
     year: 'numeric',
   })
   const threatFile = fieldData.threat_file || '[File]'
-  const socEmail = client.soc_email || 'soc@eci.com'
+  // Resolve SOC email: client-specific > user settings > fallback
+  const socEmail = client.soc_email || settings.soc_email || DEFAULT_USER_SETTINGS.soc_email
 
   switch (verdict) {
     case 'benign_ca_success':
@@ -97,15 +100,36 @@ function buildAlertSummary(
 }
 
 /**
+ * Builds the sign-off block from user settings template.
+ * Substitutes {{analyst_name}} and {{team_name}} tokens.
+ */
+function buildSignOff(settings: UserSettings, analystName: string): string {
+  return settings.sign_off_template
+    .replace(/\{\{analyst_name\}\}/g, analystName)
+    .replace(/\{\{team_name\}\}/g, settings.team_name)
+}
+
+/**
  * Main draft email generator.
  * Produces the analyst's exact email format matching real drafts.
+ * All branding (team name, SOC email, sign-off) is driven by UserSettings.
  */
 export function generateDraftEmail(
   investigation: Investigation,
   client: Client,
   rule: AlertRule | null,
-  analystName: string
+  analystName: string,
+  settings?: UserSettings
 ): string {
+  // Fall back to defaults if settings not loaded yet
+  const s: UserSettings = settings ?? {
+    id: '',
+    user_id: '',
+    created_at: '',
+    updated_at: '',
+    ...DEFAULT_USER_SETTINGS,
+  }
+
   const fd = investigation.field_data || {}
 
   // Auto-defang IPs and URLs in field values for display
@@ -124,7 +148,8 @@ export function generateDraftEmail(
 
   const alertSummary = buildAlertSummary(investigation, fd)
   const observations = buildObservations(investigation.observations || [])
-  const nextSteps = buildNextSteps(fd, client, investigation)
+  const nextSteps = buildNextSteps(fd, client, investigation, s)
+  const signOff = buildSignOff(s, analystName)
 
   // Use rule template if available, else use generic template
   let body: string
@@ -135,9 +160,11 @@ export function generateDraftEmail(
       observations: observations,
       next_steps: nextSteps,
       analyst_name: analystName,
-      soc_email: client.soc_email || 'soc@eci.com',
+      team_name: s.team_name,
+      soc_email: client.soc_email || s.soc_email,
       client_name: client.name,
       case_number: investigation.case_number,
+      sign_off: signOff,
     }
     body = renderTemplate(rule.emailTemplate, context)
   } else {
@@ -157,9 +184,7 @@ ${observations}
 
 ${nextSteps}
 
-Regards,
-${analystName}
-ECI-SOC`
+${signOff}`
   }
 
   return body

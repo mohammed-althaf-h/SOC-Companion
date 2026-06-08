@@ -9,24 +9,32 @@ import {
   ChevronRight,
   Shield,
   LogOut,
+  BarChart3,
+  Clock,
+  Search,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { useClientStore } from '@/store/clientStore'
 import { useAuth } from '@/hooks/useAuth'
+import { useUserSettings } from '@/hooks/useUserSettings'
 import { toast } from 'sonner'
 
 const NAV_ITEMS = [
-  { to: '/',             icon: LayoutDashboard, label: 'Dashboard',   end: true },
-  { to: '/clients',      icon: Users,           label: 'Clients' },
-  { to: '/investigations',icon: FileSearch,     label: 'Investigations' },
-  { to: '/templates',    icon: BookOpen,        label: 'Alert Templates' },
-  { to: '/rules-wiki',   icon: BookOpen,        label: 'Rules Wiki' },
-  { to: '/settings',     icon: Settings,        label: 'Settings' },
+  { to: '/',               icon: LayoutDashboard, label: 'Dashboard',       end: true },
+  { to: '/clients',        icon: Users,           label: 'Clients' },
+  { to: '/investigations', icon: FileSearch,      label: 'Investigations' },
+  { to: '/templates',      icon: BookOpen,        label: 'Alert Templates' },
+  { to: '/rules-wiki',     icon: BookOpen,        label: 'Rules Wiki' },
+  { to: '/iocs',           icon: Search,          label: 'Global IOCs' },
+  { to: '/analytics',      icon: BarChart3,       label: 'Analytics' },
+  { to: '/shift-report',   icon: Clock,           label: 'Shift Report' },
+  { to: '/settings',       icon: Settings,        label: 'Settings' },
 ]
 
 export default function Sidebar() {
   const { sidebarCollapsed, setSidebarCollapsed } = useClientStore()
   const { user, signOut, analystName } = useAuth()
+  const { data: settings } = useUserSettings()
   const navigate = useNavigate()
 
   const handleSignOut = async () => {
@@ -54,7 +62,9 @@ export default function Sidebar() {
         {!sidebarCollapsed && (
           <div className="overflow-hidden">
             <p className="text-sm font-bold text-foreground leading-tight">SOC-Companion</p>
-            <p className="text-[10px] text-muted-foreground uppercase tracking-wider">ECI-SOC Platform</p>
+            <p className="text-[10px] text-muted-foreground uppercase tracking-wider truncate">
+              {settings?.team_name ?? 'SOC Platform'}
+            </p>
           </div>
         )}
       </div>

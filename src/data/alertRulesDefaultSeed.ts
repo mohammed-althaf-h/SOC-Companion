@@ -27,14 +27,21 @@ export const ALERT_RULES: AlertRule[] = [
       { id: 'sign_in_history', label: 'Sign-in History (30 days)', type: 'select', options: ['Nothing abnormal', 'Previous sign-ins from same IP', 'Suspicious activity noted', 'First time from this location'] },
       { id: 'bypass_group', label: 'MFA Bypass Group (if applicable)', type: 'text', placeholder: 'M365 - Conditional Access Bypass' },
       { id: 'risk_reason', label: 'Risk Reason / Unfamiliar Features', type: 'text', placeholder: 'Unregistered Device or Unrecognized IP address' },
+      { id: 'date_time', label: 'Date/Time (if required)', type: 'text', placeholder: 'May 01, 2025 @ 11:17 EST' },
+      { id: 'related_case', label: 'Related Case (if any)', type: 'text', placeholder: 'CS1999087' },
       { id: 'verdict_type', label: 'Next Step Type', type: 'select', options: ['benign_ca_success', 'benign_vpn', 'suspicious_awaiting', 'mfa_bypass_group', 'confirmed_expected', 'malicious_ioc_blocked'], required: true },
     ],
     observationsChecklist: [
-      { id: 'obs-signin', text: 'Upon reviewing the logs, we could see successful sign-in activity from IP address: "{{source_ip}}" using a {{device_registration}} "{{device_type}}" device to access the application "{{application}}". {{date_time}}', variables: ['source_ip', 'device_registration', 'device_type', 'application', 'date_time'] },
-      { id: 'obs-ip-rep', text: 'We reviewed IP reputation across threat intelligence sources and found it to be {{ip_reputation}}, belonging to ISP: "{{isp}}", {{country}}.', variables: ['ip_reputation', 'isp', 'country'] },
-      { id: 'obs-ca', text: 'We could see these sign-in attempts were initiated from an Azure AD {{device_registration}} "{{device_type}}" device, wherein the Conditional Access policy ({{ca_policy}}) was applied {{ca_policy_result}}.', variables: ['device_registration', 'device_type', 'ca_policy', 'ca_policy_result'] },
-      { id: 'obs-duo', text: 'We have verified the DUO logs for the same and could see that a successful DUO push from the device "{{duo_device}}" with the authentication reason as "verification_code_correct".', variables: ['duo_device'] },
-      { id: 'obs-history', text: 'Further we observed that user was part of risky sign-ins due to these unfamiliar features i.e.: {{risk_reason}}, however we have reviewed sign-in activities of user over past 30 days and {{sign_in_history}}.', variables: ['risk_reason', 'sign_in_history'] },
+      { id: 'obs-signin-basic', text: 'Upon reviewing the logs, we could see successful sign-ins from the user account "{{affected_user}}" towards application: "{{application}}" from the IP: "{{source_ip}}".', variables: ['affected_user', 'application', 'source_ip'] },
+      { id: 'obs-signin-device', text: 'Upon reviewing the logs we could see a successful interactive sign in from a {{device_registration}} "{{device_type}}" device originating from {{country}} with IP {{source_ip}}. We have verified the IP and it belongs to {{isp}}. The sign-ins were towards the application "{{application}}".', variables: ['device_registration', 'device_type', 'country', 'source_ip', 'isp', 'application'] },
+      { id: 'obs-ip-rep', text: 'We have analyzed the reputation of the mentioned IP: {{source_ip}} across threat intel\'s and found it to be {{ip_reputation}}, belonging to ISP: "{{isp}}", {{country}}.', variables: ['source_ip', 'ip_reputation', 'isp', 'country'] },
+      { id: 'obs-ca-device', text: 'We could see these sign-in attempts were initiated from an Azure AD {{device_registration}} "{{device_type}}" device, wherein the Conditional Access policy ({{ca_policy}}) was applied {{ca_policy_result}}.', variables: ['device_registration', 'device_type', 'ca_policy', 'ca_policy_result'] },
+      { id: 'obs-ca-duo', text: 'Further reviewing we could see that the sign-ins are successful as the CA policy "{{ca_policy}}" was applied {{ca_policy_result}}. We have verified the DUO logs for the same and could see that a successful DUO push from the device "{{duo_device}}" with the authentication reason as "verification_code_correct".', variables: ['ca_policy', 'ca_policy_result', 'duo_device'] },
+      { id: 'obs-history', text: 'Further we observed that user was part of risky sign-ins due to these unfamiliar features i.e.: {{risk_reason}}, However we have reviewed sign-in activities of user over past 30 days and {{sign_in_history}}.', variables: ['risk_reason', 'sign_in_history'] },
+      { id: 'obs-interrupted', text: 'Upon reviewing the logs, we observed interrupted sign-in attempts for the account "{{affected_user}}" from external IPs: "{{source_ip}}" (ISP: {{isp}}, {{country}}).', variables: ['affected_user', 'source_ip', 'isp', 'country'] },
+      { id: 'obs-interrupted-rep', text: 'We have reviewed the reputation of the IPs and determined it to be {{ip_reputation}}. The afore-mentioned sign-ins occurred on {{date_time}} towards the application: "{{application}}".', variables: ['ip_reputation', 'date_time', 'application'] },
+      { id: 'obs-mfa-exempt', text: 'Additionally, we could observe that this user account has been exempted from MFA w.r.t. previous case: {{related_case}}.', variables: ['related_case'] },
+      { id: 'obs-signin-vpn', text: 'Upon reviewing the logs, we could see successful sign-in activity from IP address: "{{source_ip}}" using a {{device_registration}} "{{device_type}}" device to access the application "{{application}}" around {{date_time}}. Wherein CA policy ({{ca_policy}}) was applied {{ca_policy_result}}. We reviewed IP reputation across threat intelligence sources and found it to belongs to ISP: "{{isp}}", {{country}}. Which is associated with third party VPN Service ({{vpn_provider}}).', variables: ['source_ip', 'device_registration', 'device_type', 'application', 'date_time', 'ca_policy', 'ca_policy_result', 'isp', 'country', 'vpn_provider'] }
     ],
     emailTemplate: `Hello All,
 
@@ -1123,12 +1130,3 @@ ECI-SOC`,
   },
 ]
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-export function getAlertRuleById(id: string): AlertRule | undefined {
-  return ALERT_RULES.find((r) => r.id === id)
-}
-
-export function getAlertRulesByCategory(category: AlertRule['category']): AlertRule[] {
-  return ALERT_RULES.filter((r) => r.category === category)
-}

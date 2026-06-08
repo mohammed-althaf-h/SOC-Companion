@@ -1,7 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
 import type { AlertRule } from '@/types'
-import { ALERT_RULES } from '@/data/alertRules'
 
 // Convert from DB row to AlertRule
 const mapDbToAlertRule = (row: any): AlertRule => ({
@@ -27,23 +26,7 @@ export function useAlertTemplates() {
 
       if (error) throw error
 
-      const dbTemplates = (data || []).map(mapDbToAlertRule)
-      
-      // Merge DB templates with hardcoded defaults. DB overrides defaults.
-      const dbMap = new Map(dbTemplates.map(t => [t.id, t]))
-      const merged = ALERT_RULES.map(defaultRule => {
-        if (dbMap.has(defaultRule.id)) {
-          const override = dbMap.get(defaultRule.id)!
-          dbMap.delete(defaultRule.id)
-          return override
-        }
-        return defaultRule
-      })
-
-      // Add remaining custom templates
-      merged.push(...dbMap.values())
-      
-      return merged
+      return (data || []).map(mapDbToAlertRule)
     },
   })
 }

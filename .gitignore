@@ -11,7 +11,8 @@ lerna-debug.log*
 node_modules
 dist
 dist-ssr
-*.local
+.env
+.env.*
 
 # Editor directories and files
 .vscode/*
@@ -27,3 +28,7 @@ dist-ssr
 # Supabase Local
 supabase/.temp/
 supabase/.branches/
+
+# AI Agent Context
+.agents/
+skills-lock.json
