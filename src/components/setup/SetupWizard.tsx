@@ -37,6 +37,13 @@ export default function SetupWizard({ onComplete }: { onComplete: () => void }) 
     }
   }, [settings])
 
+  // If already setup, just complete
+  useEffect(() => {
+    if (settings?.setup_completed) {
+      onComplete()
+    }
+  }, [settings?.setup_completed]) // eslint-disable-line react-hooks/exhaustive-deps
+
   if (settingsLoading || clientsLoading) {
     return (
       <div className="fixed inset-0 bg-background z-50 flex items-center justify-center">
@@ -44,13 +51,6 @@ export default function SetupWizard({ onComplete }: { onComplete: () => void }) 
       </div>
     )
   }
-
-  // If already setup, just complete
-  useEffect(() => {
-    if (settings?.setup_completed) {
-      onComplete()
-    }
-  }, [settings?.setup_completed]) // eslint-disable-line react-hooks/exhaustive-deps
 
   if (settings?.setup_completed) {
     return null
