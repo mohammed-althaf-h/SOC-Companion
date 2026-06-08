@@ -137,7 +137,7 @@ export default function DashboardPage() {
             <LayoutDashboard className="w-5 h-5 text-primary" />
             Quick Actions
           </h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <Link to="/investigations/new" className="p-4 rounded-lg bg-surface border border-surface-border hover:border-primary/50 transition-colors flex flex-col gap-2 group">
               <ShieldAlert className="w-6 h-6 text-primary group-hover:scale-110 transition-transform" />
               <span className="font-medium">New Investigation</span>

@@ -130,14 +130,14 @@ export default function AlertTemplatesPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-foreground">Alert Templates</h1>
           <p className="text-sm text-muted-foreground mt-1">
             Browse the library of pre-configured alert templates and investigation workflows.
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           {/* Import */}
           <button
             onClick={() => fileRef.current?.click()}
@@ -170,8 +170,8 @@ export default function AlertTemplatesPage() {
         </div>
       </div>
 
-      <div className="flex items-center justify-between gap-4">
-        <div className="flex bg-surface p-1 rounded-lg border border-surface-border">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-wrap bg-surface p-1 rounded-lg border border-surface-border">
           {tabs.map(tab => (
             <button
               key={tab.id}
@@ -189,7 +189,7 @@ export default function AlertTemplatesPage() {
           ))}
         </div>
 
-        <div className="relative w-64">
+        <div className="relative w-full md:w-64">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input
             type="text"

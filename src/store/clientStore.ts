@@ -7,9 +7,13 @@ interface ClientStore {
   activeClient: Client | null
   setActiveClient: (client: Client | null) => void
 
-  // Sidebar collapsed state
+  // Sidebar collapsed state (desktop)
   sidebarCollapsed: boolean
   setSidebarCollapsed: (v: boolean) => void
+
+  // Mobile sidebar state
+  mobileSidebarOpen: boolean
+  setMobileSidebarOpen: (v: boolean) => void
 
   // All clients cache (to avoid re-fetching for cross-contamination checks)
   clientsCache: Client[]
@@ -24,6 +28,9 @@ export const useClientStore = create<ClientStore>()(
 
       sidebarCollapsed: false,
       setSidebarCollapsed: (v) => set({ sidebarCollapsed: v }),
+
+      mobileSidebarOpen: false,
+      setMobileSidebarOpen: (v) => set({ mobileSidebarOpen: v }),
 
       clientsCache: [],
       setClientsCache: (clients) => set({ clientsCache: clients }),

@@ -26,9 +26,9 @@ export default function RulesWikiPage() {
   )
 
   return (
-    <div className="flex h-[calc(100vh-2rem)] gap-6 animate-fade-in">
+    <div className="flex flex-col md:flex-row h-[calc(100vh-2rem)] gap-4 md:gap-6 animate-fade-in">
       {/* Left Sidebar - Rules List */}
-      <div className="w-80 flex flex-col glass-card p-0 overflow-hidden shrink-0">
+      <div className="w-full md:w-80 h-64 md:h-auto flex flex-col glass-card p-0 overflow-hidden shrink-0">
         <div className="p-4 border-b border-surface-border">
           <h2 className="text-lg font-bold mb-4 flex items-center gap-2">
             <Book className="w-5 h-5 text-primary" /> Rules Wiki

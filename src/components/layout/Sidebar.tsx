@@ -32,7 +32,7 @@ const NAV_ITEMS = [
 ]
 
 export default function Sidebar() {
-  const { sidebarCollapsed, setSidebarCollapsed } = useClientStore()
+  const { sidebarCollapsed, setSidebarCollapsed, mobileSidebarOpen, setMobileSidebarOpen } = useClientStore()
   const { user, signOut, analystName } = useAuth()
   const { data: settings } = useUserSettings()
   const navigate = useNavigate()
@@ -44,13 +44,22 @@ export default function Sidebar() {
   }
 
   return (
-    <aside
-      className={cn(
-        'fixed left-0 top-0 h-full z-40 flex flex-col transition-all duration-300',
-        'bg-[#12141f] border-r border-surface-border',
-        sidebarCollapsed ? 'w-16' : 'w-64'
+    <>
+      {/* Mobile backdrop */}
+      {mobileSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-30 md:hidden"
+          onClick={() => setMobileSidebarOpen(false)}
+        />
       )}
-    >
+      <aside
+        className={cn(
+          'fixed left-0 top-0 h-full z-40 flex flex-col transition-all duration-300',
+          'bg-[#12141f] border-r border-surface-border',
+          mobileSidebarOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0',
+          sidebarCollapsed ? 'w-16' : 'w-64'
+        )}
+      >
       {/* Logo */}
       <div className={cn(
         'flex items-center gap-3 px-4 h-16 border-b border-surface-border',
@@ -84,6 +93,7 @@ export default function Sidebar() {
               )
             }
             title={sidebarCollapsed ? label : undefined}
+            onClick={() => setMobileSidebarOpen(false)}
           >
             <Icon className="w-4 h-4 flex-shrink-0" />
             {!sidebarCollapsed && <span>{label}</span>}
@@ -130,5 +140,6 @@ export default function Sidebar() {
         </button>
       </div>
     </aside>
+    </>
   )
 }

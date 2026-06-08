@@ -207,7 +207,8 @@ export default function SettingsPage() {
 
         <hr className="border-surface-border" />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <form onSubmit={(e) => { e.preventDefault(); handleSaveApiKeys(); }} className="space-y-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
           <div className="space-y-1.5">
             <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               AbuseIPDB API Key
@@ -265,16 +266,17 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="flex justify-end">
-          <button
-            onClick={handleSaveApiKeys}
-            disabled={isPending}
-            className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-all"
-          >
-            <Save className="w-4 h-4" />
-            Save API Keys
-          </button>
-        </div>
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={isPending}
+              className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-medium hover:bg-primary/90 disabled:opacity-50 transition-all"
+            >
+              <Save className="w-4 h-4" />
+              Save API Keys
+            </button>
+          </div>
+        </form>
       </div>
       {/* ── AI Providers ─────────────────────────────────────────────── */}
       <div className="glass-card p-6 space-y-5">
@@ -292,7 +294,7 @@ export default function SettingsPage() {
 
         <hr className="border-surface-border" />
 
-        <div className="space-y-4">
+        <form onSubmit={(e) => { e.preventDefault(); handleSaveApiKeys(); }} className="space-y-4">
           <div className="space-y-1.5 max-w-xs">
             <label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
               Active LLM Provider
@@ -377,16 +379,17 @@ export default function SettingsPage() {
           </div>
         </div>
 
-        <div className="flex justify-end">
-          <button
-            onClick={handleSaveApiKeys}
-            disabled={isPending}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-500 disabled:opacity-50 transition-all"
-          >
-            <Save className="w-4 h-4" />
-            Save API Keys
-          </button>
-        </div>
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={isPending}
+              className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-medium hover:bg-indigo-500 disabled:opacity-50 transition-all"
+            >
+              <Save className="w-4 h-4" />
+              Save API Keys
+            </button>
+          </div>
+        </form>
       </div>
 
       {/* ── Security Info ──────────────────────────────────────────── */}

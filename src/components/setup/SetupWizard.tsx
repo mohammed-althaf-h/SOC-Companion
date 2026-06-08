@@ -46,8 +46,13 @@ export default function SetupWizard({ onComplete }: { onComplete: () => void }) 
   }
 
   // If already setup, just complete
+  useEffect(() => {
+    if (settings?.setup_completed) {
+      onComplete()
+    }
+  }, [settings?.setup_completed]) // eslint-disable-line react-hooks/exhaustive-deps
+
   if (settings?.setup_completed) {
-    onComplete()
     return null
   }
 
