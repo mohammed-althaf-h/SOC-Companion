@@ -128,7 +128,7 @@ export function generateDraftEmail(
     created_at: '',
     updated_at: '',
     ...DEFAULT_USER_SETTINGS,
-  }
+  } as UserSettings
 
   const fd = investigation.field_data || {}
 
